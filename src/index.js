@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, SectionList, RefreshControl, TouchableOpacity, Animated, Dimensions, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, RefreshControl, TouchableOpacity, Animated, Dimensions, ScrollView } from 'react-native';
 import PropTypes from 'prop-types';
 import Carousel from '@itenl/react-native-snap-carousel';
 import HocComponent from './HocComponent';
@@ -8,7 +8,6 @@ import packagejson from '../package.json';
 import { initScreen, triggerOnce, refreshMap, onRefresh, triggerRefresh, onEndReached, triggerEndReached } from './useRefreshEndReached';
 const deviceWidth = Dimensions.get('window').width;
 
-const AnimatedSectionList = Animated.createAnimatedComponent(SectionList);
 const AnimatedCarousel = Animated.createAnimatedComponent(Carousel);
 
 const CONSOLE_LEVEL = {
@@ -739,7 +738,7 @@ export default class ScrollableTabView extends React.Component {
   }
 
   render() {
-    const { style, onEndReachedThreshold, fixedHeader, carouselProps, sectionListProps } = this.props;
+    const { style, carouselProps } = this.props;
     return (
       <View
         onLayout={({ nativeEvent }) => {
