@@ -384,17 +384,18 @@ export default class ScrollableTabView extends React.Component {
   }
 
   _renderTab({ item, index }) {
-    const { tabActiveOpacity, tabWrapStyle, tabInnerStyle, tabStyle, textStyle, textActiveStyle, tabUnderlineStyle, tabsEnableAnimated } = this.props;
+    const { tabActiveOpacity, tabWrapStyle, tabInnerStyle, tabStyle, textStyle, textActiveStyle, tabUnderlineStyle, tabsEnableAnimated, stacks } = this.props;
     const _tabUnderlineStyle = Object.assign({ top: 6 }, styles.tabUnderlineStyle, tabUnderlineStyle);
     const _checked = this.state.checkedIndex == index;
     const _tabWrapStyle = typeof tabWrapStyle === 'function' ? tabWrapStyle(item, index, _checked) : tabWrapStyle;
     const _tab = typeof item.tabLabelRender === 'function' ? item.tabLabelRender(item.tabLabel, index, _checked) : item.tabLabel;
+    const width = textStyle.width ?? Dimensions.get('window').width / stacks.length;
     return (
       <View onLayout={this._measureTab.bind(this, index)} key={index} style={_tabWrapStyle}>
         {this._renderBadges(index)}
         <TouchableOpacity activeOpacity={tabActiveOpacity} onPress={() => this._onTabviewChange(false, index)} style={[styles.tabStyle, tabStyle]}>
           <View style={tabInnerStyle}>
-            {typeof _tab === 'string' ? <Text style={[styles.textStyle, textStyle, _checked && textActiveStyle]}>{_tab}</Text> : _tab}
+            {typeof _tab === 'string' ? <Text style={[styles.textStyle, textStyle, {width}, _checked && textActiveStyle]}>{_tab}</Text> : _tab}
             {!tabsEnableAnimated && _checked && <View style={_tabUnderlineStyle}></View>}
           </View>
         </TouchableOpacity>
@@ -511,9 +512,9 @@ export default class ScrollableTabView extends React.Component {
   }
 
   _renderSectionHeader() {
-    const { fixedHeader } = this.props;
+    const { fixedHeader, tabsStyle } = this.props;
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{height: tabsStyle.height ?? 40}}>
         {this._renderHeader(fixedHeader)}
         {this._renderStickyHeader()}
         {this._renderTabs()}
@@ -749,39 +750,20 @@ export default class ScrollableTabView extends React.Component {
         style={[styles.container, style]}
       >
         {this._renderTitle()}
-        <AnimatedSectionList
-          ref={rf => (this.section = rf)}
-          keyExtractor={(item, index) => `scrollable-tab-view-wrap-${index}`}
-          renderSectionHeader={this._renderSectionHeader}
-          onEndReached={this._onEndReached}
-          onEndReachedThreshold={onEndReachedThreshold}
-          refreshControl={this._refreshControl()}
-          sections={[{ data: [1] }]}
-          stickySectionHeadersEnabled={true}
-          ListHeaderComponent={this._renderHeader(!fixedHeader)}
-          showsVerticalScrollIndicator={false}
-          showsHorizontalScrollIndicator={false}
-          renderItem={() => {
-            return (
-              <AnimatedCarousel
-                pagingEnabled={true}
-                inactiveSlideOpacity={1}
-                inactiveSlideScale={1}
-                data={this.stacks}
-                renderItem={this._renderItem}
-                sliderWidth={deviceWidth}
-                itemWidth={deviceWidth}
-                onScrollIndexChanged={this._throttleCallback}
-                firstItem={this.state.checkedIndex}
-                onScroll={this._onScrollHandler2Horizontal}
-                {...carouselProps}
-              />
-            );
-          }}
-          onScrollToIndexFailed={() => {}}
-          onScroll={this._onScrollHandler2Vertical}
-          {...sectionListProps}
-        ></AnimatedSectionList>
+        {this._renderSectionHeader()}
+        <AnimatedCarousel
+            pagingEnabled={true}
+            inactiveSlideOpacity={1}
+            inactiveSlideScale={1}
+            data={this.stacks}
+            renderItem={this._renderItem}
+            sliderWidth={deviceWidth}
+            itemWidth={deviceWidth}
+            onScrollIndexChanged={this._throttleCallback}
+            firstItem={this.state.checkedIndex}
+            onScroll={this._onScrollHandler2Horizontal}
+            {...carouselProps}
+        />
       </View>
     );
   }
