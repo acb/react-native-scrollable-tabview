@@ -647,13 +647,7 @@ export default class ScrollableTabView extends React.Component {
     return (
       header &&
       isRender && (
-        <View
-          onLayout={({ nativeEvent }) => {
-            const { height } = nativeEvent.layout;
-            this.layoutHeight['header'] = height;
-            if (height !== 0) this._refresh();
-          }}
-        >
+        <View>
           {typeof header === 'function' ? header() : header}
         </View>
       )
@@ -664,13 +658,7 @@ export default class ScrollableTabView extends React.Component {
     const { stickyHeader } = this.props;
     return (
       stickyHeader && (
-        <View
-          onLayout={({ nativeEvent }) => {
-            const { height } = nativeEvent.layout;
-            this.layoutHeight['stickyHeader'] = height;
-            if (height !== 0) this._refresh();
-          }}
-        >
+        <View>
           {typeof stickyHeader === 'function' ? stickyHeader() : stickyHeader}
         </View>
       )
@@ -741,11 +729,6 @@ export default class ScrollableTabView extends React.Component {
     const { style, carouselProps } = this.props;
     return (
       <View
-        onLayout={({ nativeEvent }) => {
-          const { height } = nativeEvent.layout;
-          this.layoutHeight['container'] = height;
-          if (height !== 0) this._refresh();
-        }}
         style={[styles.container, style]}
       >
         {this._renderTitle()}
